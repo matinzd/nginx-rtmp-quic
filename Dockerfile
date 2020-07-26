@@ -1,8 +1,13 @@
 FROM alpine:latest
 
+LABEL maintainer "Matin Zadehdolatabad <zadehdolatabad@gmail.com>"
+
 ENV NGINX_VERSION nginx-1.16.1
 
-RUN apk --update add openssl-dev cargo cmake pcre-dev git zlib-dev wget build-base && \
+RUN \
+    build_packages="openssl-dev cargo cmake linux-headers pcre-dev git zlib-dev wget build-base" && \
+    runtime_packages="ca-certificates pcre zlib libaio openssl" && \
+    apk --update add ${build_packages} ${runtime_packages} && \
     mkdir -p /tmp/src && \
     cd /tmp/src && \
     git clone https://github.com/arut/nginx-rtmp-module.git && \
@@ -22,12 +27,15 @@ RUN apk --update add openssl-dev cargo cmake pcre-dev git zlib-dev wget build-ba
         --with-cc-opt="-Wimplicit-fallthrough=0" \
         --add-module=../nginx-rtmp-module \
         --with-http_gzip_static_module \
+        --with-file-aio \
+        --with-threads \
+        --with-http_auth_request_module \
         --http-log-path=/var/log/nginx/access.log \
         --error-log-path=/var/log/nginx/error.log \
         --sbin-path=/usr/local/sbin/nginx && \
     make && \
     make install && \
-    apk del build-base && \
+    apk del ${build_packages} && \
     rm -rf /tmp/src && \
     rm -rf /var/cache/apk/*
 
