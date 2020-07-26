@@ -6,7 +6,7 @@ ENV NGINX_VERSION nginx-1.16.1
 
 RUN \
     build_packages="openssl-dev cargo cmake linux-headers pcre-dev git zlib-dev wget build-base" && \
-    runtime_packages="ca-certificates pcre zlib libaio openssl" && \
+    runtime_packages="ca-certificates ffmpeg pcre zlib libaio openssl" && \
     apk --update add ${build_packages} ${runtime_packages} && \
     mkdir -p /tmp/src && \
     cd /tmp/src && \
@@ -35,7 +35,7 @@ RUN \
         --sbin-path=/usr/local/sbin/nginx && \
     make && \
     make install && \
-    apk del ${build_packages} && \
+    # apk del ${build_packages} && \
     rm -rf /tmp/src && \
     rm -rf /var/cache/apk/*
 
