@@ -31,6 +31,7 @@ RUN \
         --with-file-aio \
         --with-threads \
         --with-http_auth_request_module \
+        --with-http_realip_module \
         --http-log-path=/var/log/nginx/access.log \
         --error-log-path=/var/log/nginx/error.log \
         --sbin-path=/usr/local/sbin/nginx && \
