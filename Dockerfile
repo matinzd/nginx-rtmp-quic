@@ -5,12 +5,12 @@ LABEL maintainer "Matin Zadehdolatabad <zadehdolatabad@gmail.com>"
 ENV NGINX_VERSION nginx-1.16.1
 
 RUN \
-    build_packages="openssl-dev cargo cmake linux-headers pcre-dev git zlib-dev wget build-base" && \
-    runtime_packages="ca-certificates ffmpeg pcre zlib libaio openssl" && \
+    build_packages="openssl-dev  cmake  pcre-dev git wget build-base" && \
+    runtime_packages="ca-certificates ffmpeg pcre zlib linux-headers libaio openssl zlib-dev cargo" && \
     apk --update add ${build_packages} ${runtime_packages} && \
     mkdir -p /tmp/src && \
     cd /tmp/src && \
-    git clone https://github.com/arut/nginx-rtmp-module.git && \
+    wget https://github.com/arut/nginx-rtmp-module/archive/v1.2.1.tar.gz -O nginx-rtmp-module.tar.gz && tar -zxvf nginx-rtmp-module.tar.gz && \
     git clone --recursive https://github.com/cloudflare/quiche && \
     wget http://nginx.org/download/${NGINX_VERSION}.tar.gz && \
     tar -zxvf ${NGINX_VERSION}.tar.gz && \
@@ -20,12 +20,13 @@ RUN \
         --prefix=/etc/nginx \
         --build="quiche-$(git --git-dir=../quiche/.git rev-parse --short HEAD)" \
         --with-http_ssl_module \
+        --with-http_secure_link_module \
         --with-http_v2_module \
         --with-http_v3_module \
         --with-openssl=../quiche/deps/boringssl \
         --with-quiche=../quiche \
         --with-cc-opt="-Wimplicit-fallthrough=0" \
-        --add-module=../nginx-rtmp-module \
+        --add-module=../nginx-rtmp-module-1.2.1 \
         --with-http_gzip_static_module \
         --with-file-aio \
         --with-threads \
@@ -35,7 +36,7 @@ RUN \
         --sbin-path=/usr/local/sbin/nginx && \
     make && \
     make install && \
-    # apk del ${build_packages} && \
+    apk del ${build_packages} && \
     rm -rf /tmp/src && \
     rm -rf /var/cache/apk/*
 
