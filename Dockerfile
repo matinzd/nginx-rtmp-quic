@@ -62,6 +62,7 @@ RUN \
     rm -rf /var/cache/apk/*
 
 # forward request and error logs to docker log collector
+RUN touch /var/log/nginx/access.log && touch /var/log/nginx/error.log
 RUN ln -sf /dev/stdout /var/log/nginx/access.log
 RUN ln -sf /dev/stderr /var/log/nginx/error.log
 
