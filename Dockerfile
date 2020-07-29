@@ -9,6 +9,24 @@ ENV LUA_NGX_VERSION=0.10.17
 ENV RTMP_NGX_VERSION=1.2.1
 ENV NGX_DEVEL_KIT_VERSION=0.3.1
 
+
+ARG DEV_PACKAGES="openssl-dev  cmake  pcre-dev git wget build-base luajit-dev"
+ARG RUNTIME_PACKAGES="ca-certificates ffmpeg pcre zlib linux-headers libaio openssl zlib-dev cargo"
+
+RUN apk --update add ${DEV_PACKAGES} ${RUNTIME_PACKAGES}
+
+RUN \
+    export LUAJIT_LIB=/usr/lib && \
+    export LUAJIT_INC=/usr/lib/usr/include/luajit-${LUAJIT_VERSION} && \
+    mkdir -p /tmp/src && \
+    cd /tmp/src && \
+    wget https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGX_VERSION}.tar.gz -O lua-nginx-module.tar.gz && tar -zxvf lua-nginx-module.tar.gz && \
+    wget https://github.com/vision5/ngx_devel_kit/archive/v${NGX_DEVEL_KIT_VERSION}.tar.gz -O ngx_devel_kit.tar.gz && tar -zxvf ngx_devel_kit.tar.gz && \
+    wget https://github.com/arut/nginx-rtmp-module/archive/v${RTMP_NGX_VERSION}.tar.gz -O nginx-rtmp-module.tar.gz && tar -zxvf nginx-rtmp-module.tar.gz && \
+    wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar -zxvf nginx-${NGINX_VERSION}.tar.gz && \
+    git clone --recursive https://github.com/cloudflare/quiche && \
+    cd /tmp/src/nginx-${NGINX_VERSION}
+
 ARG NGINX_BUILD_OPTIONS="\
         --prefix=/etc/nginx \
         --build=\"quiche-$(git --git-dir=../quiche/.git rev-parse --short HEAD)\" \
@@ -32,21 +50,7 @@ ARG NGINX_BUILD_OPTIONS="\
         --error-log-path=/var/log/nginx/error.log \
         --sbin-path=/usr/local/sbin/nginx"
 
-ARG DEV_PACKAGES="openssl-dev  cmake  pcre-dev git wget build-base luajit-dev"
-ARG RUNTIME_PACKAGES="ca-certificates ffmpeg pcre zlib linux-headers libaio openssl zlib-dev cargo"
-
 RUN \
-    apk --update add ${DEV_PACKAGES} ${RUNTIME_PACKAGES} && \
-    export LUAJIT_LIB=/usr/lib && \
-    export LUAJIT_INC=/usr/lib/usr/include/luajit-${LUAJIT_VERSION} && \
-    mkdir -p /tmp/src && \
-    cd /tmp/src && \
-    wget https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGX_VERSION}.tar.gz -O lua-nginx-module.tar.gz && tar -zxvf lua-nginx-module.tar.gz && \
-    wget https://github.com/vision5/ngx_devel_kit/archive/v${NGX_DEVEL_KIT_VERSION}.tar.gz -O ngx_devel_kit.tar.gz && tar -zxvf ngx_devel_kit.tar.gz && \
-    wget https://github.com/arut/nginx-rtmp-module/archive/v${RTMP_NGX_VERSION}.tar.gz -O nginx-rtmp-module.tar.gz && tar -zxvf nginx-rtmp-module.tar.gz && \
-    wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar -zxvf nginx-${NGINX_VERSION}.tar.gz && \
-    git clone --recursive https://github.com/cloudflare/quiche && \
-    cd /tmp/src/nginx-${NGINX_VERSION} && \
     patch -p01 < ../quiche/extras/nginx/nginx-1.16.patch && \
     ./configure ${NGINX_BUILD_OPTIONS} && \
     make j2 && \
