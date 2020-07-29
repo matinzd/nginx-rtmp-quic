@@ -28,17 +28,20 @@ RUN \
     wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar -zxvf nginx-${NGINX_VERSION}.tar.gz && \
     git clone --recursive https://github.com/cloudflare/quiche
 
-RUN NGINX_BUILD_OPTIONS="\
+RUN \
+    cd /tmp/src/nginx-${NGINX_VERSION} && \
+    patch -p01 < ../quiche/extras/nginx/nginx-1.16.patch && \
+    ./configure \
         --prefix=/etc/nginx \
-        --build=\"quiche-$(git --git-dir=/tmp/src/quiche/.git rev-parse --short HEAD)\" \
+        --build="quiche-$(git --git-dir=/tmp/src/quiche/.git rev-parse --short HEAD)" \
         --with-http_ssl_module \
         --with-http_secure_link_module \
         --with-http_v2_module \
         --with-http_v3_module \
         --with-openssl=/tmp/src/quiche/deps/boringssl \
         --with-quiche=/tmp/src/quiche \
-        --with-cc-opt=\"-Wimplicit-fallthrough=0\" \
-        --with-ld-opt=\"-Wl,-rpath,/usr/lib\" \
+        --with-cc-opt="-Wimplicit-fallthrough=0" \
+        --with-ld-opt="-Wl,-rpath,/usr/lib" \
         --add-module=/tmp/src/nginx-rtmp-module-${RTMP_NGX_VERSION} \
         --add-module=/tmp/src/lua-nginx-module-${LUA_NGX_VERSION} \
         --add-module=/tmp/src/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION}} \
@@ -49,12 +52,7 @@ RUN NGINX_BUILD_OPTIONS="\
         --with-http_realip_module \
         --http-log-path=/var/log/nginx/access.log \
         --error-log-path=/var/log/nginx/error.log \
-        --sbin-path=/usr/local/sbin/nginx"
-
-RUN \
-    cd /tmp/src/nginx-${NGINX_VERSION} && \
-    patch -p01 < ../quiche/extras/nginx/nginx-1.16.patch && \
-    ./configure ${NGINX_BUILD_OPTIONS} && \
+        --sbin-path=/usr/local/sbin/nginx && \
     make && \
     make install && \
     apk del ${DEV_PACKAGES} && \
