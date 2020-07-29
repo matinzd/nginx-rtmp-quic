@@ -1,13 +1,13 @@
  
-# Dockerfile - alpine
-# https://github.com/openresty/docker-openresty
+# Alpine version of openresty rtmp compatible
+# From official version of openresty docker @see https://github.com/openresty/docker-openresty
 
 ARG RESTY_IMAGE_BASE="alpine"
 ARG RESTY_IMAGE_TAG="3.11"
 
 FROM ${RESTY_IMAGE_BASE}:${RESTY_IMAGE_TAG}
 
-LABEL maintainer="Evan Wies <evan@neomantra.net>"
+LABEL maintainer="Matin Zadehdolatabad <m.dolatabadi@raimun.com>"
 
 # Docker Build Arguments
 ARG RESTY_IMAGE_BASE="alpine"
