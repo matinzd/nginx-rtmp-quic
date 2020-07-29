@@ -55,7 +55,7 @@ RUN \
     cd /tmp/src/nginx-${NGINX_VERSION} && \
     patch -p01 < ../quiche/extras/nginx/nginx-1.16.patch && \
     ./configure ${NGINX_BUILD_OPTIONS} && \
-    make j2 && \
+    make && \
     make install && \
     apk del ${DEV_PACKAGES} && \
     rm -rf /tmp/src && \
