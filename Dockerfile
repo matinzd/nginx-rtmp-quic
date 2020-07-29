@@ -44,7 +44,7 @@ RUN \
         --with-ld-opt="-Wl,-rpath,/usr/lib" \
         --add-module=/tmp/src/nginx-rtmp-module-${RTMP_NGX_VERSION} \
         --add-module=/tmp/src/lua-nginx-module-${LUA_NGX_VERSION} \
-        --add-module=/tmp/src/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION}} \
+        --add-module=/tmp/src/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION} \
         --with-http_gzip_static_module \
         --with-file-aio \
         --with-threads \
