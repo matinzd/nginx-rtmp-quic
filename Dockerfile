@@ -17,20 +17,17 @@ RUN mkdir -p /tmp/src
 
 WORKDIR /tmp/src
 
-RUN apk --update add ${DEV_PACKAGES} ${RUNTIME_PACKAGES}
-
 RUN \
+    apk --update add ${DEV_PACKAGES} ${RUNTIME_PACKAGES} \
     export LUAJIT_LIB=/usr/lib && \
     export LUAJIT_INC=/usr/lib/usr/include/luajit-${LUAJIT_VERSION} && \
     wget https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGX_VERSION}.tar.gz -O lua-nginx-module.tar.gz && tar -zxvf lua-nginx-module.tar.gz && \
     wget https://github.com/vision5/ngx_devel_kit/archive/v${NGX_DEVEL_KIT_VERSION}.tar.gz -O ngx_devel_kit.tar.gz && tar -zxvf ngx_devel_kit.tar.gz && \
     wget https://github.com/arut/nginx-rtmp-module/archive/v${RTMP_NGX_VERSION}.tar.gz -O nginx-rtmp-module.tar.gz && tar -zxvf nginx-rtmp-module.tar.gz && \
     wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar -zxvf nginx-${NGINX_VERSION}.tar.gz && \
-    git clone --recursive https://github.com/cloudflare/quiche
-
-RUN \
+    git clone --recursive https://github.com/cloudflare/quiche && \
     cd /tmp/src/nginx-${NGINX_VERSION} && \
-    patch -p01 < ../quiche/extras/nginx/nginx-1.16.patch && \
+    patch -p01 < /tmp/src/quiche/extras/nginx/nginx-1.16.patch && \
     ./configure \
         --prefix=/etc/nginx \
         --build="quiche-$(git --git-dir=/tmp/src/quiche/.git rev-parse --short HEAD)" \
