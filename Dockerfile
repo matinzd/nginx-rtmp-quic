@@ -8,9 +8,10 @@ ENV LUAJIT_VERSION=2.1
 ENV LUA_NGX_VERSION=0.10.17
 ENV RTMP_NGX_VERSION=1.2.1
 ENV NGX_DEVEL_KIT_VERSION=0.3.1
+ENV LUA_JIT_FILE_VERSION=2.1-20200102
 
 
-ARG DEV_PACKAGES="openssl-dev  cmake  pcre-dev git wget build-base luajit-dev"
+ARG DEV_PACKAGES="openssl-dev  cmake  pcre-dev git wget build-base"
 ARG RUNTIME_PACKAGES="ca-certificates ffmpeg pcre zlib linux-headers libaio openssl zlib-dev cargo"
 
 RUN mkdir -p /tmp/src 
@@ -19,8 +20,10 @@ WORKDIR /tmp/src
 
 RUN \
     apk --update add ${DEV_PACKAGES} ${RUNTIME_PACKAGES} && \
-    export LUAJIT_LIB=/usr/lib && \
-    export LUAJIT_INC=/usr/lib/usr/include/luajit-${LUAJIT_VERSION} && \
+    export LUAJIT_LIB=/usr/local/lib && \
+    export LUAJIT_INC=/usr/local/include/luajit-${LUAJIT_VERSION} && \
+    wget https://github.com/openresty/luajit2/archive/v${LUA_JIT_FILE_VERSION}.tar.gz -O luajit2.tar.gz && tar -zxvf luajit2.tar.gz && \
+    cd /tmp/src/luajit2-${LUA_JIT_FILE_VERSION} && make install && cd /tmp/src && \
     wget https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGX_VERSION}.tar.gz -O lua-nginx-module.tar.gz && tar -zxvf lua-nginx-module.tar.gz && \
     wget https://github.com/vision5/ngx_devel_kit/archive/v${NGX_DEVEL_KIT_VERSION}.tar.gz -O ngx_devel_kit.tar.gz && tar -zxvf ngx_devel_kit.tar.gz && \
     wget https://github.com/arut/nginx-rtmp-module/archive/v${RTMP_NGX_VERSION}.tar.gz -O nginx-rtmp-module.tar.gz && tar -zxvf nginx-rtmp-module.tar.gz && \
