@@ -37,8 +37,8 @@ ARG RUNTIME_PACKAGES="ca-certificates ffmpeg pcre zlib linux-headers libaio open
 
 RUN \
     apk --update add ${DEV_PACKAGES} ${RUNTIME_PACKAGES} && \
-    export LUAJIT_LIB=/usr/lib \
-    export LUAJIT_INC=/usr/lib/usr/include/luajit-${LUAJIT_VERSION} \
+    export LUAJIT_LIB=/usr/lib && \
+    export LUAJIT_INC=/usr/lib/usr/include/luajit-${LUAJIT_VERSION} && \
     mkdir -p /tmp/src && \
     cd /tmp/src && \
     wget https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGX_VERSION}.tar.gz -O lua-nginx-module.tar.gz && tar -zxvf lua-nginx-module.tar.gz && \
