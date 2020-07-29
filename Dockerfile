@@ -18,7 +18,7 @@ RUN mkdir -p /tmp/src
 WORKDIR /tmp/src
 
 RUN \
-    apk --update add ${DEV_PACKAGES} ${RUNTIME_PACKAGES} \
+    apk --update add ${DEV_PACKAGES} ${RUNTIME_PACKAGES} && \
     export LUAJIT_LIB=/usr/lib && \
     export LUAJIT_INC=/usr/lib/usr/include/luajit-${LUAJIT_VERSION} && \
     wget https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGX_VERSION}.tar.gz -O lua-nginx-module.tar.gz && tar -zxvf lua-nginx-module.tar.gz && \
