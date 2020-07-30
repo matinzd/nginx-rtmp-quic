@@ -84,7 +84,6 @@ LABEL resty_eval_post_make="${RESTY_EVAL_POST_MAKE}"
 RUN apk add --no-cache --virtual .build-deps \
         build-base \
         coreutils \
-        curl \
         gd-dev \
         geoip-dev \
         libxslt-dev \
@@ -102,6 +101,8 @@ RUN apk add --no-cache --virtual .build-deps \
         zlib \
         ffmpeg \
         ${RESTY_ADD_PACKAGE_RUNDEPS} \
+        perl \
+        curl \
     && cd /tmp \
     && if [ -n "${RESTY_EVAL_PRE_CONFIGURE}" ]; then eval $(echo ${RESTY_EVAL_PRE_CONFIGURE}); fi \
     && cd /tmp \
@@ -159,6 +160,8 @@ RUN apk add --no-cache --virtual .build-deps \
 
 # Add additional binaries into PATH for convenience
 ENV PATH=$PATH:/usr/local/openresty/luajit/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/bin
+
+RUN opm get knyar/nginx-lua-prometheus
 
 CMD ["/usr/local/openresty/bin/openresty", "-g", "daemon off;"]
 
